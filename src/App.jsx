@@ -1,86 +1,79 @@
-import React from 'react';
-import logo from '/src/assets/Logo.png';
-import ticketLogo from '/src/assets/ticket-logo.svg';
-import './main.css'
-
-
-
+import React, { useEffect, useState } from 'react';
+import './main.css';
+import HeaderApp from './component/header/HeaderApp.jsx';
+import TransferFilters from './component/transfers/TransferFilters.jsx';
+import PriceFilters from './component/categoriesTickets/PriceFilters.jsx';
+import TicketsList from './component/ticketsList/TicketsList.jsx';
+import FooterApp from './component/footer/FooterApp.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchTickets,
+  fetchSearchId,
+} from './redux/slices/ticketsSlice.js';
 
 const App = () => {
-    return (
+  const dispatch = useDispatch();
+  const { stop, searchId } = useSelector((state) => state.tickets);
+  const transferFilters = useSelector((state) => state.filters.stops);
+  const [noTicketsMessage, setNoTicketsMessage] = useState(false);
 
-        <div className="App">
-            <div className="wrapper">
-                <header className='header-logo'>
-                    <img src={ logo } alt='logo'></img>
-                </header>
-                <div className='main'>
-                    <div className="transfer-filter">
-                        <h3 className='transfer-filter__title'>Количество пересадок</h3>
-                        <form className='checkbox-container'>
-                            <input type="checkbox" className="custom-checkbox" id="done-1" name="happy" value="yes"/>
-                            <label htmlFor="done-1">Все</label>
-                            <input type="checkbox" className="custom-checkbox" id="done-2" name="happy" value="yes"/>
-                            <label htmlFor="done-2">Без пересадок</label>
-                            <input type="checkbox" className="custom-checkbox" id="done-3" name="happy" value="yes"/>
-                            <label htmlFor="done-3">1 пересадка</label>
-                            <input type="checkbox" className="custom-checkbox" id="done-4" name="happy" value="yes"/>
-                            <label htmlFor="done-4">2 пересадки</label>
-                            <input type="checkbox" className="custom-checkbox" id="done-5" name="happy" value="yes"/>
-                            <label htmlFor="done-5">3 пересадки</label>
-                        </form>
-                    </div>
-                    <div className="price-filters">
-                        <div className='price-filter price-filter__cheap price-filter__cheap--active'>Самый дешевый</div>
-                        <div className='price-filter price-filter__fastest'>Самый быстрый</div>
-                        <div className='price-filter price-filter__optimal'>Оптимальный</div>
-                    </div>
-                    <ul className='tickets-list'>
-                        <li className='ticket'>
-                       <header className='ticket-header'>
-                           <div className='ticket-header__price'>13 400 Р</div>
-                           <div className='ticket-header__logo'>
-                               <img src={ticketLogo} alt="Airlines name"/>
-                           </div>
-                       </header>
-                            <ul className='info-wrapper'>
-                                <li className='info'>
-                                    <div className='info__time'>
-                                        <p className='info--text-light'>MOW – HKT</p>
-                                        <p>10:45 – 08:00</p>
-                                    </div>
-                                    <div className='info__total-hours'>
-                                        <p className='info--text-light'>В пути</p>
-                                        <p>21ч 15м</p>
-                                    </div>
-                                    <div className='info__total-transfers'>
-                                        <p className='info--text-light'>2 пересадки</p>
-                                        <p>HKG, JNB</p>
-                                    </div>
-                                </li>
-                                <li className='info'>
-                                    <div className='info__time'>
-                                        <p className='info--text-light'>MOW – HKT</p>
-                                        <p>20:05 – 04:40</p>
-                                    </div>
-                                    <div className='info__total-hours'>
-                                        <p className='info--text-light'>В пути</p>
-                                        <p>19ч 10м</p>
-                                    </div>
-                                    <div className='info__total-transfers'>
-                                        <p className='info--text-light'>1 пересадкa</p>
-                                        <p>JNB</p>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                <footer>
+  useEffect(() => {
+    console.log('--');
+    const localSearchId = localStorage.getItem('searchId');
+    console.log(localSearchId);
 
-                </footer>
-            </div>
+    if (localSearchId) {
+      dispatch(fetchTickets(localSearchId)).then((response) => {
+        if (response.error && response.error.message.includes('404')) {
+          console.log('Ошибка 404, получаем новый searchId...');
+          dispatch(fetchSearchId()).then((newSearchIdResponse) => {
+            // Сохраняем новый searchId в хранилище
+            localStorage.setItem('searchId', newSearchIdResponse.payload);
+          });
+        }
+        if (response.error && response.error.message.includes('500')) {
+          console.log('Ошибка 404, получаем новый searchId...');
+          dispatch(fetchSearchId()).then((newSearchIdResponse) => {
+            // Сохраняем новый searchId в хранилище
+            localStorage.setItem('searchId', newSearchIdResponse.payload);
+          });
+        }
+      });
+    } else {
+      console.log('Получаем новый searchId...');
+      dispatch(fetchSearchId()).then((newSearchIdResponse) => {
+        // Сохраняем его в хранилище
+        localStorage.setItem('searchId', newSearchIdResponse.payload);
+      });
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (searchId && !stop) {
+      const interval = setInterval(() => {
+        console.log('Запрос билетов...');
+        dispatch(fetchTickets(searchId));
+      }, 6000);
+
+      return () => clearInterval(interval);
+    }
+  }, [dispatch, searchId, stop]);
+
+  return (
+    <div className="App">
+      <div className="wrapper">
+        <HeaderApp />
+        <div className="main">
+          <TransferFilters />
+          <PriceFilters />
+          <TicketsList
+            noTicketsMessage={noTicketsMessage}
+            setNoTicketsMessage={setNoTicketsMessage}
+          />
+          <FooterApp noTicketsMessage={noTicketsMessage} />
         </div>
-    )
-}
+      </div>
+    </div>
+  );
+};
 export default App;

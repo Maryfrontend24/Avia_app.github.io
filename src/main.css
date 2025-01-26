@@ -2,207 +2,269 @@
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    background-color:#e5e5e5;
+  margin: 0;
+  padding: 0;
+  background-color: #e5e5e5;
+  height: 100%;
 }
-*{
-    box-sizing: border-box;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-:root{
-    --light-color:#A0B0B9;
-    --dark-color:#4A4A4A;
-    --main-color-project:#549df4;
-    --main-color-hover:#F1FCFF;
-    --main-color-checked:#b3d7ff;
-    --box-shadow:0 2px 8px 0 rgba(0, 0, 0, 0.1);
+* {
+  box-sizing: border-box;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-
-.App{
-    font-family: "Open Sans", sans-serif;
-    font-style: normal;
-    text-transform: uppercase;
-    font-weight: 600;
-    color:var(--dark-color);
-    font-size: 12px;
-}
-.wrapper{
-    display: flex;
-    flex-direction: column;
-    border: 1px solid deepskyblue;
-    min-height: 100vh;
-    background-color: #F3F7FA;
-    max-width: 961px;
-    margin: 0 auto;
+:root {
+  --light-color: #a0b0b9;
+  --dark-color: #4a4a4a;
+  --main-color-project: #549df4;
+  --main-color-hover: #f1fcff;
+  --main-color-checked: #b3d7ff;
+  --box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
 }
 
-.header-logo{
-    padding: 50px 0;
-    text-align: center;
+.App {
+  font-family: 'Open Sans', sans-serif;
+  font-style: normal;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--dark-color);
+  font-size: 12px;
 }
-.main{
-    display: grid;
-    grid-template-columns: 232px 502px;
-    column-gap: 20px;
-    align-self: center;
-    grid-template-areas: 'transfer price'
-                        'transfer tickets';
-}
-
-.transfer-filter{
-    grid-area: transfer;
-    width: 232px;
-    font-weight: 400;
-    color:#4A4A4A;
-    font-size: 13px;
-    background: white;
-    border-radius: 5px;
-    padding: 20px;
-    margin-right: 20px;
-    box-shadow: var(--box-shadow);
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid deepskyblue;
+  min-height: 100vh;
+  background-color: #f3f7fa;
+  max-width: 961px;
+  margin: 0 auto;
 }
 
-.transfer-filter form{
-    display:inline-flex;
-    flex-direction: column;
-    font-weight: 400;
-    text-transform: none;
-    margin: 0 -20px;
+.header-logo {
+  padding: 50px 0;
+  text-align: center;
 }
-.transfer-filter__title{
-    font-family: inherit;
-    font-size: 12px;
-    font-weight:600;
-    margin-bottom: 10px;
+.main {
+  display: grid;
+  grid-template-columns: 232px 502px;
+  column-gap: 20px;
+  align-self: center;
+  grid-template-areas:
+    'transfer price'
+    'transfer tickets'
+    'transfer footer';
+}
+
+.transfer-filter {
+  grid-area: transfer;
+  width: 232px;
+  max-height: 252px;
+  font-weight: 400;
+  color: var(--dark-color);
+  font-size: 13px;
+  background: white;
+  border-radius: 5px;
+  padding: 20px;
+  margin-right: 20px;
+  box-shadow: var(--box-shadow);
+}
+
+.transfer-filter form {
+  display: inline-flex;
+  flex-direction: column;
+  font-weight: 400;
+  text-transform: none;
+  margin: 0 -20px;
+}
+.transfer-filter__title {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 .custom-checkbox {
-    position: absolute;
-    z-index: -1;
-    opacity: 0;
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
 }
-.custom-checkbox+label {
-    display: inline-flex;
-    align-items: center;
-    user-select: none;
-    padding:10px 20px;
-    cursor: pointer;
+.custom-checkbox + label {
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+  padding: 10px 20px;
+  cursor: pointer;
 }
-.custom-checkbox+label::before {
-    content: '';
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    flex-shrink: 0;
-    flex-grow: 0;
-    border: 1px solid #adb5bd;
-    border-radius: 0.25em;
-    margin-right: 0.5em;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 50% 50%;
+.custom-checkbox + label::before {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  flex-grow: 0;
+  border: 1px solid #adb5bd;
+  border-radius: 0.25em;
+  margin-right: 0.5em;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 50% 50%;
 }
-.custom-checkbox:checked+label::before {
-    border-color: var(--main-color-project);
-    background-color: var(--main-color-project);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+.custom-checkbox:checked + label::before {
+  border-color: var(--main-color-project);
+  background-color: var(--main-color-project);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
 }
 
 /* стили при наведении курсора на checkbox */
-.custom-checkbox:not(:disabled):not(:checked)+label:hover::before {
-    border-color: var(--main-color-checked);
+.custom-checkbox:not(:disabled):not(:checked) + label:hover::before {
+  border-color: var(--main-color-checked);
 }
 /* стили для активного состояния чекбокса (при нажатии на него) */
-.custom-checkbox:not(:disabled):active+label::before {
-    background-color: var(--main-color-checked);
-    border-color: var(--main-color-checked);
+.custom-checkbox:not(:disabled):active + label::before {
+  background-color: var(--main-color-checked);
+  border-color: var(--main-color-checked);
 }
 /* стили для чекбокса, находящегося в фокусе */
-.custom-checkbox:focus+label::before {
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+.custom-checkbox:focus + label::before {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 /* стили для чекбокса, находящегося в фокусе и не находящегося в состоянии checked */
-.custom-checkbox:focus:not(:checked)+label::before {
-    border-color: #80bdff;
+.custom-checkbox:focus:not(:checked) + label::before {
+  border-color: #80bdff;
 }
 /* стили для чекбокса, находящегося в состоянии disabled */
-.custom-checkbox:disabled+label::before {
-    background-color: #e9ecef;
+.custom-checkbox:disabled + label::before {
+  background-color: #e9ecef;
 }
 
-.price-filters{
-    grid-area: price;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 502px;
-    height: 50px;
-    border: 1px solid #DFE5EC;
-    border-radius: 5px;
-    background-color: #fff;
-    margin-bottom: 20px;
+.section--line {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 502px;
+  height: 50px;
+  border: 1px solid #dfe5ec;
+  border-radius: 5px;
+  background-color: #fff;
+  margin-bottom: 20px;
 }
 
-.price-filter{
-    line-height: 50px;
-    width: 50%;
-    text-align: center;
-    border-right: 1px solid #DFE5EC;
+.price-filters {
+  grid-area: price;
+  display: inline-flex;
 }
 
-.price-filter.price-filter__optimal{
-    border-right: 0;
+.price-filter {
+  line-height: 50px;
+  width: 50%;
+  text-align: center;
+  border-right: 1px solid #dfe5ec;
+  cursor: pointer;
+  transition:
+    background-color 0.1s,
+    color 0.3s;
 }
 
-.price-filter__cheap--active:hover{
-    background-color: var(--main-color-project);
-    border-radius: 5px;
-    color: #fff;
+.price-filter.price-filter__optimal {
+  border-right: 0;
 }
 
-
-.tickets-list{
-    grid-area: tickets;
-    width: 502px;
-}
-.ticket{
-    border-radius: 5px;
-    background-color: white;
-    box-shadow: var(--box-shadow);
-    padding: 20px;
-}
-.ticket-header{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-.ticket-header__price{
-    font-size: 24px;
-    color: var(--main-color-project);
-}
-.ticket-header__logo{
-    width: 140px;
+.price-filter__cheap:hover,
+.price-filter__optimal:hover,
+.price-filter__fastest:hover,
+.main-footer:hover {
+  background-color: rgba(128, 189, 255, 0.82);
+  border-radius: 5px;
+  color: #fff;
 }
 
-.info{
-    display: flex;
-    gap: 20px;
+.price-filter.price-filter__cheap--active,
+.price-filter.price-filter__fastest--active,
+.price-filter.price-filter__optimal--active {
+  background-color: var(--main-color-project);
+  border-radius: 5px;
+  color: #fff;
+}
+
+.tickets-list {
+  grid-area: tickets;
+  width: 502px;
+}
+.ticket {
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: var(--box-shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.ticket-header__price {
+  font-size: 24px;
+  color: var(--main-color-project);
+}
+.ticket-header__logo {
+  width: 140px;
+}
+
+.info {
+  display: flex;
+  gap: 20px;
 }
 
 .info__time,
 .info__total-hours,
-.info__total-transfers{
-    width: 140px;
+.info__total-transfers {
+  width: 140px;
 }
-.info-wrapper li{
-    margin-bottom:20px ;
+.info-wrapper li {
+  margin-bottom: 20px;
 }
 
-.info--text-light{
-    color: var(--light-color);
+.info--text-light {
+  color: var(--light-color);
+}
+
+.info__total-hours {
+  position: relative;
+}
+.info__total-hours--up img {
+  position: absolute;
+  top: -3px;
+  left: 82px;
+}
+
+.info__total-hours--down img {
+  position: absolute;
+  top: -2px;
+  left: 82px;
+}
+.main-footer {
+  grid-area: footer;
+  margin-top: auto;
+  cursor: pointer;
+  background-color: var(--main-color-project);
+}
+
+.ticket-header__logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ticket-carrier {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: white;
+  width: 36px; /* Размер круга */
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(250, 175, 100, 0.91); /* Цвет круга */
 }
