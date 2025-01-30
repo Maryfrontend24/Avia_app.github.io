@@ -11,8 +11,6 @@ import {
   fetchSearchId,
 } from './redux/slices/ticketsSlice.js';
 
-
-  //
   const App = () => {
     const dispatch = useDispatch();
     const { stop, searchId } = useSelector((state) => state.tickets);
@@ -85,7 +83,7 @@ import {
                 break;
               }
             }
-            // await new Promise((resolve) => setTimeout(resolve, 3000));
+
           } catch (error) {
             console.error('Ошибка при получении билетов:', error);
             break;
@@ -94,8 +92,6 @@ import {
       };
       fetchTicketsLoop();
   }, [dispatch, stop, searchId]);
-
-
 
 
   return (
