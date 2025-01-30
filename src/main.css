@@ -56,6 +56,7 @@ body {
     'transfer footer';
 }
 
+
 .transfer-filter {
   grid-area: transfer;
   width: 232px;
@@ -71,11 +72,11 @@ body {
 }
 
 .transfer-filter form {
-  display: inline-flex;
+  display: block;
   flex-direction: column;
+  width: 210px;
   font-weight: 400;
   text-transform: none;
-  margin: 0 -20px;
 }
 .transfer-filter__title {
   font-family: inherit;
@@ -86,16 +87,38 @@ body {
 
 .custom-checkbox {
   position: absolute;
-  z-index: -1;
   opacity: 0;
 }
 .custom-checkbox + label {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
+  vertical-align: middle;
   user-select: none;
   padding: 10px 20px;
   cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s; /* Плавный переход цвета фона */
+  position: relative;
 }
+.custom-checkbox label {
+  position: relative;
+}
+
+.custom-checkbox +label:before {
+  position: absolute;
+}
+
+.custom-checkbox label{
+  width: 210px;
+}
+.custom-checkbox + label::before{
+  position: absolute;
+  left: -2px;
+  top: 11px;
+}
+.custom-checkbox + label:hover::before {
+  background-color: rgba(173, 216, 230, 0.5); /* Нежно-голубой цвет при наведении */
+}
+
 .custom-checkbox + label::before {
   content: '';
   display: inline-block;
@@ -156,14 +179,11 @@ body {
 }
 
 .price-filter {
-  line-height: 50px;
-  width: 50%;
-  text-align: center;
-  border-right: 1px solid #dfe5ec;
+  /*border-right: 1px solid #dfe5ec;*/
   cursor: pointer;
-  transition:
-    background-color 0.1s,
-    color 0.3s;
+  /*transition:*/
+  /*  background-color 0.1s,*/
+  /*  color 0.3s;*/
 }
 
 .price-filter.price-filter__optimal {
@@ -175,16 +195,18 @@ body {
 .price-filter__fastest:hover,
 .main-footer:hover {
   background-color: rgba(128, 189, 255, 0.82);
-  border-radius: 5px;
-  color: #fff;
+  color: #fff !important;
 }
 
 .price-filter.price-filter__cheap--active,
 .price-filter.price-filter__fastest--active,
 .price-filter.price-filter__optimal--active {
   background-color: var(--main-color-project);
-  border-radius: 5px;
   color: #fff;
+}
+
+.price-filter.price-filter__cheap--active{
+  color:white !important;
 }
 
 .tickets-list {
@@ -257,6 +279,7 @@ body {
   justify-content: center;
 }
 
+
 .ticket-carrier {
   display: inline-flex;
   align-items: center;
@@ -267,4 +290,16 @@ body {
   height: 36px;
   border-radius: 50%;
   background-color: rgba(250, 175, 100, 0.91); /* Цвет круга */
+}
+
+.ant-radio-button-wrapper{
+  font-size: 12px !important;
+  color: var(--dark-color) !important;
+  font-weight: 400 !important;
+  margin-bottom: 30px;
+}
+
+
+.wrapperClassName{
+  margin-bottom: 10px;
 }

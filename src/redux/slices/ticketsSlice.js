@@ -22,48 +22,34 @@ export const fetchSearchId = createAsyncThunk(
 );
 
 export const fetchTickets = createAsyncThunk(
-  'tickets/fetchTickets',
-  async (searchId, { rejectWithValue }) => {
-    console.log(
-      'Запрос к серверу для получения билетов с searchId:',
-      searchId,
-    );
-    try {
-      const response = await fetch(`${TICKETS_URL}?searchId=${searchId}`);
-      if (!response.ok) {
-        if (response.status === 404) {
-          return rejectWithValue(
-            `Ничего не найдено для searchId: ${searchId}`,
-          );
+    'tickets/fetchTickets',
+    async (searchId, { rejectWithValue }) => {
+      console.log('Запрос к серверу для получения билетов с searchId:', searchId);
+      try {
+        const response = await fetch(`${TICKETS_URL}?searchId=${searchId}`);
+        if (!response.ok) {
+          if (response.status === 404) {
+            return rejectWithValue(`Ничего не найдено для searchId: ${searchId}`);
+          }
+          console.error(`Ошибка при получении билетов: ${response.status} - ${response.statusText}`);
+          return rejectWithValue(`Ошибка ${response.status}: ${response.statusText}`);
         }
-        console.error(
-          `Ошибка при получении билетов: ${response.status} - ${response.statusText}`,
-        );
-        return rejectWithValue(
-          `Ошибка ${response.status}: ${response.statusText}`,
-        ); // Указываем статус и текст ошибки
+
+        const data = await response.json();
+        console.log('Получены билеты:', data);
+
+        return data; // Возвращаем данные, даже если tickets пустые
+      } catch (error) {
+          console.error('Ошибка при получении searchId:', error);
+          throw error;
       }
-
-      const data = await response.json();
-      console.log('Получены билеты:', data);
-
-      if (data.tickets.length === 0 && data.stop) {
-        console.log('Запрос завершён: билеты не найдены.');
-        return { tickets: [], stop: true };
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Исключение при запросе:', error.message);
-      return rejectWithValue(error.message);
-    }
-  },
+    },
 );
 
 const ticketsSlice = createSlice({
   name: 'tickets',
   initialState: {
-    searchId: null,
+      searchId: localStorage.getItem('searchId') || null,
     tickets: [],
     loading: false,
     error: null,
@@ -74,7 +60,7 @@ const ticketsSlice = createSlice({
       state.tickets = [];
       state.loading = false;
       state.error = null;
-      state.stop = false;
+      state.stop = true;
     },
   },
   extraReducers: (builder) => {
@@ -88,23 +74,22 @@ const ticketsSlice = createSlice({
       })
       .addCase(fetchSearchId.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+          state.error = action.error.message;
       })
       .addCase(fetchTickets.pending, (state) => {
         state.loading = true;
+          state.error = null;
       })
-      .addCase(fetchTickets.fulfilled, (state, action) => {
-        if (action.payload.stop) {
-          state.stop = true; // Устанавливаем stop в true
-          state.loading = false;
-        } else {
-          state.tickets.push(...action.payload.tickets);
-          state.loading = false;
-        }
-      })
+        .addCase(fetchTickets.fulfilled, (state, action) => {
+            if (action.payload.stop) {
+                state.stop = true; // Устанавливаем stop в true
+            }
+            state.loading = false;
+            state.tickets.push(...action.payload.tickets);
+        })
       .addCase(fetchTickets.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Произошла ошибка';
       });
   },
 });

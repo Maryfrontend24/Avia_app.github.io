@@ -1,8 +1,10 @@
-import React, { useEffect, useId, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useId, useMemo, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import Ticket from '/src/component/ticket/Ticket.jsx';
+ import { v4 as uuidv4 } from 'uuid';
+ import {Spin} from "antd";
 
-const TicketsList = ({ noTicketsMessage, setNoTicketsMessage }) => {
+const TicketsList = ({noTicketsMessage, setNoTicketsMessage}) => {
   let id = 100;
   const dispatch = useDispatch();
   const fetchedTickets = useSelector((state) => state.tickets.tickets); // Получаем все билеты из состояния
@@ -13,9 +15,9 @@ const TicketsList = ({ noTicketsMessage, setNoTicketsMessage }) => {
   const filteredTickets = useMemo(() => {
     return fetchedTickets.filter((ticket) => {
       const stopCount =
-        ticket.segments[0].stops.length || ticket.segments[1].stops.length;
+          ticket.segments[0].stops.length || ticket.segments[1].stops.length;
       const count =
-        ticket.segments[0].stops.length + ticket.segments[1].stops.length;
+          ticket.segments[0].stops.length + ticket.segments[1].stops.length;
 
       // фильтры пересадок
       if (transferFilters.noStops && count > 0) return false; // Без пересадок
@@ -35,20 +37,17 @@ const TicketsList = ({ noTicketsMessage, setNoTicketsMessage }) => {
           return a.segments[0].duration - b.segments[0].duration;
         case 'optimal':
           const aTravelTime = a.segments.reduce(
-            (total, segment) => total + segment.duration,
-            0,
+              (total, segment) => total + segment.duration,
+              0,
           );
           const bTravelTime = b.segments.reduce(
-            (total, segment) => total + segment.duration,
-            0,
+              (total, segment) => total + segment.duration,
+              0,
           );
 
-          // Сравниваем время в пути
           if (aTravelTime !== bTravelTime) {
-            return aTravelTime - bTravelTime; // Сортируем по времени в пути
+            return aTravelTime - bTravelTime;
           }
-
-          // Если время в пути одинаковое, сравниваем по цене
           return a.price - b.price; //
         default:
           return 0;
@@ -59,34 +58,42 @@ const TicketsList = ({ noTicketsMessage, setNoTicketsMessage }) => {
   const renderingTickets = sortedTickets.slice(0, 10);
 
   useEffect(() => {
-    // Если загрузка завершена и нет билетов, устанавливаем таймаут для текста пользователю
     if (!loading) {
       if (renderingTickets.length === 0) {
+        // Если билетов нет, то устанавливаем таймаут для текста пользователю
         const timer = setTimeout(() => {
           setNoTicketsMessage(true);
         }, 800);
 
-        return () => clearTimeout(timer); //очистка таймера при размонтировании
+        return () => clearTimeout(timer);
       } else {
-        setNoTicketsMessage(false); // Сброс текста, если билеты есть
+        // если билеты есть,то сбрасываем сообщение
+        setNoTicketsMessage(false);
       }
     }
   }, [loading, renderingTickets]);
 
   return (
-    <ul className="tickets-list">
-      {loading && (
-        <li style={{ marginBottom: '10px' }}>Загрузка билетов...</li>
-      )}
-      {/*{error && <li style={{ color: 'red', marginBottom: '10px' }}>Ошибка: {error.message}</li>}/*/}
-      {renderingTickets.length > 0
-        ? renderingTickets.map((ticket) => (
-            <Ticket key={id++} ticket={ticket} />
-          ))
-        : noTicketsMessage && (
+
+      <ul className="tickets-list">
+        {loading && (
+            <Spin
+                spinning={true}
+                size="middle"
+                fullscreen={false}
+                className="wrapperClassName"
+            />
+        )}
+        {renderingTickets.length > 0
+            ? renderingTickets.map((ticket) => {
+              // уникальный ключ
+              const key = `${ticket.price}-${ticket.carrier}-${uuidv4()}`;
+              return <Ticket key={key} ticket={ticket}/>;
+            })
+            : noTicketsMessage && (
             <li>Нет билетов, соответствующих поиску:(</li>
-          )}
-    </ul>
+        )}
+      </ul>
   );
 };
 

@@ -11,53 +11,92 @@ import {
   fetchSearchId,
 } from './redux/slices/ticketsSlice.js';
 
-const App = () => {
-  const dispatch = useDispatch();
-  const { stop, searchId } = useSelector((state) => state.tickets);
-  const transferFilters = useSelector((state) => state.filters.stops);
-  const [noTicketsMessage, setNoTicketsMessage] = useState(false);
 
-  useEffect(() => {
-    console.log('--');
-    const localSearchId = localStorage.getItem('searchId');
-    console.log(localSearchId);
+  //
+  const App = () => {
+    const dispatch = useDispatch();
+    const { stop, searchId } = useSelector((state) => state.tickets);
+    const [noTicketsMessage, setNoTicketsMessage] = useState(false);
 
-    if (localSearchId) {
-      dispatch(fetchTickets(localSearchId)).then((response) => {
-        if (response.error && response.error.message.includes('404')) {
-          console.log('Ошибка 404, получаем новый searchId...');
-          dispatch(fetchSearchId()).then((newSearchIdResponse) => {
-            // Сохраняем новый searchId в хранилище
-            localStorage.setItem('searchId', newSearchIdResponse.payload);
-          });
+  //   useEffect(() => {
+  //       console.log('Запуск цикла получения билетов...');
+  //       const fetchTicketsLoop = async () => {
+  //         while (!stop) {
+  //           try {
+  //             // Получаем searchId из хранилища
+  //             const localSearchId = localStorage.getItem('searchId');
+  //
+  //             // Если searchId не найден, то мы запрашиваем его
+  //             if (!localSearchId) {
+  //               console.log('searchId не найден, запрашиваем новый...');
+  //               const action = await dispatch(fetchSearchId());
+  //
+  //               // Проверяем статус выполнения fetchSearchId
+  //               if (fetchSearchId.fulfilled.match(action)) {
+  //                 // Тут можно добавить задержку перед следующей итерацией
+  //                 console.log("Получен новый searchId. Продолжаем...");
+  //                 await new Promise((resolve) => setTimeout(resolve, 5000));
+  //               } else {
+  //                 // В случае ошибки пишем в лог и выходим из цикла
+  //                 console.error('Не удалось получить новый searchId:', action.error);
+  //                 break;
+  //               }
+  //             } else {
+  //               const action = await dispatch(fetchTickets(localSearchId));
+  //
+  //               // Проверяем, успешно ли выполнен запрос на получение билетов
+  //               if (action.meta.requestStatus === 'fulfilled'&& action.payload.stop) {
+  //                 if (action.payload.stop) {
+  //                   break; // Останавливаем цикл, если получен сигнал остановки
+  //                 }
+  //               }
+  //
+  //               // Тут можно добавить задержку перед следующей итерацией
+  //               await new Promise((resolve) => setTimeout(resolve, 5000));
+  //             }
+  //           } catch (error) {
+  //             console.error('Ошибка при получении билетов:', error);
+  //             break;
+  //           }
+  //         }
+  //       };
+  //       fetchTicketsLoop();
+  //     }, [dispatch, stop, searchId]);
+
+    useEffect(() => {
+    console.log('Запуск цикла получения билетов...');
+      const fetchTicketsLoop = async () => {
+        while (!stop) {
+          try {
+            // Получаем searchId из хранилища
+            const localSearchId = localStorage.getItem('searchId');
+            // Если searchId не найден, то мы запрашиваем его
+            if (!localSearchId) {
+              console.log('searchId не найден, запрашиваем новый...');
+              const action = await dispatch(fetchSearchId());
+              // Проверяем, успешно ли получен новый searchId
+              if (fetchSearchId.fulfilled.match(action)) {
+              } else {
+                console.error('Не удалось получить новый searchId:', action.error);
+                break;}
+            } else {
+              const action = await dispatch(fetchTickets(localSearchId));
+              if (action.meta.requestStatus === 'fulfilled' && action.payload.stop) {
+                break;
+              }
+            }
+            // await new Promise((resolve) => setTimeout(resolve, 3000));
+          } catch (error) {
+            console.error('Ошибка при получении билетов:', error);
+            break;
+          }
         }
-        if (response.error && response.error.message.includes('500')) {
-          console.log('Ошибка 404, получаем новый searchId...');
-          dispatch(fetchSearchId()).then((newSearchIdResponse) => {
-            // Сохраняем новый searchId в хранилище
-            localStorage.setItem('searchId', newSearchIdResponse.payload);
-          });
-        }
-      });
-    } else {
-      console.log('Получаем новый searchId...');
-      dispatch(fetchSearchId()).then((newSearchIdResponse) => {
-        // Сохраняем его в хранилище
-        localStorage.setItem('searchId', newSearchIdResponse.payload);
-      });
-    }
-  }, [dispatch]);
+      };
+      fetchTicketsLoop();
+  }, [dispatch, stop, searchId]);
 
-  useEffect(() => {
-    if (searchId && !stop) {
-      const interval = setInterval(() => {
-        console.log('Запрос билетов...');
-        dispatch(fetchTickets(searchId));
-      }, 6000);
 
-      return () => clearInterval(interval);
-    }
-  }, [dispatch, searchId, stop]);
+
 
   return (
     <div className="App">
